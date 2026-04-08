@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "name": "Task API Example",
+  "sources": [
+    {"path": "docs/", "exclude": ["wiki/"]},
+    {"path": "ARCHITECTURE.md"}
+  ],
+  "output": "docs/wiki/"
+}

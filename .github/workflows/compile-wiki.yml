@@ -1,0 +1,49 @@
+name: Compile Wiki
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force full recompilation (ignore cache)'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install wiki compiler
+        run: npm install -g @llm-wiki-compiler/cli
+      - name: Compile wiki
+        run: |
+          ARGS="--config .wiki-compiler.json"
+          if [ "$FORCE_RECOMPILE" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          wiki-compile $ARGS
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FORCE_RECOMPILE: ${{ inputs.force }}
+      - name: Commit compiled wiki
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/wiki/
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "docs: recompile wiki
+
+          Triggered by: ${TRIGGERED_BY}
+          Force: ${FORCE_RECOMPILE}"
+          git push
+        env:
+          TRIGGERED_BY: ${{ github.actor }}
+          FORCE_RECOMPILE: ${{ inputs.force }}

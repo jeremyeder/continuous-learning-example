@@ -1,0 +1,22 @@
+name: Compile Wiki (Ambient)
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', 'ARCHITECTURE.md']
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ambient-code/ambient-action@v2
+        with:
+          api-url: ${{ secrets.AMBIENT_API_URL }}
+          api-token: ${{ secrets.AMBIENT_BOT_TOKEN }}
+          project: ${{ github.repository }}
+          prompt: |
+            Compile docs/wiki/ from the full docs/ tree and ARCHITECTURE.md.
+            Read all source files, synthesize into topic-based articles with
+            coverage indicators, write INDEX.md and topic files to docs/wiki/.
+            Commit and push.
+          repos: '[{"url": "${{ github.server_url }}/${{ github.repository }}", "branch": "${{ github.ref_name }}", "autoPush": true}]'
+          wait: 'true'
