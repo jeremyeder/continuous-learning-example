@@ -8,7 +8,7 @@ jobs:
   compile:
     runs-on: ubuntu-latest
     steps:
-      - uses: ambient-code/ambient-action@v2
+      - uses: ambient-code/ambient-action@v0.0.5
         with:
           api-url: ${{ secrets.AMBIENT_API_URL }}
           api-token: ${{ secrets.AMBIENT_BOT_TOKEN }}
